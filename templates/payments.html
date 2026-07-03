@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Payments · Norkevin CRM{% endblock %}
+{% block header %}Payments{% endblock %}
+{% block subtitle %}Pagos pendientes y cobrados{% endblock %}
+
+{% block content %}
+<!-- Resumen -->
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Pendiente</div>
+    <div class="text-3xl font-bold text-yellow-400">Q{{ '{:,.0f}'.format(total_pending) }}</div>
+    <div class="text-xs text-gray-500 mt-1">{{ pending|length }} pagos</div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Cobrado</div>
+    <div class="text-3xl font-bold text-green-400">Q{{ '{:,.0f}'.format(total_paid) }}</div>
+    <div class="text-xs text-gray-500 mt-1">{{ paid|length }} pagos</div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total</div>
+    <div class="text-3xl font-bold text-nk-gold">Q{{ '{:,.0f}'.format(total_pending + total_paid) }}</div>
+    <div class="text-xs text-gray-500 mt-1">{{ pending|length + paid|length }} pagos</div>
+  </div>
+</div>
+
+<!-- Pendientes -->
+<h3 class="text-sm font-semibold mb-3 text-yellow-400">⚠ Pendientes</h3>
+{% if pending %}
+<div class="bg-nk-dark rounded-lg border border-nk-gray overflow-hidden mb-8">
+  <table class="w-full text-sm">
+    <thead class="bg-nk-gray text-xs uppercase tracking-wider text-gray-500">
+      <tr>
+        <th class="px-4 py-3 text-left">Cliente</th>
+        <th class="px-4 py-3 text-left">Concepto</th>
+        <th class="px-4 py-3 text-right">Monto</th>
+        <th class="px-4 py-3 text-left">Vencimiento</th>
+        <th class="px-4 py-3 text-left">Link</th>
+        <th class="px-4 py-3 text-right">Acción</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-nk-gray">
+      {% for p in pending %}
+      <tr class="hover:bg-nk-gray/50 transition">
+        <td class="px-4 py-3 font-medium">{{ p.client_name }}</td>
+        <td class="px-4 py-3 text-xs text-gray-400">{{ p.concept }}</td>
+        <td class="px-4 py-3 text-right font-medium text-yellow-400">Q{{ '{:,.0f}'.format(p.amount) }}</td>
+        <td class="px-4 py-3 text-xs text-gray-500">{{ p.due_date or '-' }}</td>
+        <td class="px-4 py-3 text-xs">
+          {% if p.recurrente_link %}
+          <a href="{{ p.recurrente_link }}" target="_blank" class="text-nk-gold hover:underline">Link pago</a>
+          {% else %}
+          <span class="text-gray-600">-</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right">
+          <button onclick="markPaid({{ p.id }})" class="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded hover:bg-green-500/30">Marcar pagado</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-nk-dark rounded-lg p-8 border border-nk-gray text-center mb-8">
+  <p class="text-sm text-gray-500">No hay pagos pendientes 🎉</p>
+</div>
+{% endif %}
+
+<!-- Cobrados -->
+<h3 class="text-sm font-semibold mb-3 text-green-400">✓ Cobrados</h3>
+{% if paid %}
+<div class="bg-nk-dark rounded-lg border border-nk-gray overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-nk-gray text-xs uppercase tracking-wider text-gray-500">
+      <tr>
+        <th class="px-4 py-3 text-left">Cliente</th>
+        <th class="px-4 py-3 text-left">Concepto</th>
+        <th class="px-4 py-3 text-right">Monto</th>
+        <th class="px-4 py-3 text-left">Cobrado</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-nk-gray">
+      {% for p in paid %}
+      <tr class="hover:bg-nk-gray/50 transition">
+        <td class="px-4 py-3 font-medium">{{ p.client_name }}</td>
+        <td class="px-4 py-3 text-xs text-gray-400">{{ p.concept }}</td>
+        <td class="px-4 py-3 text-right font-medium text-green-400">Q{{ '{:,.0f}'.format(p.amount) }}</td>
+        <td class="px-4 py-3 text-xs text-gray-500">{{ p.paid_date or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-nk-dark rounded-lg p-8 border border-nk-gray text-center">
+  <p class="text-sm text-gray-500">Sin pagos cobrados todavía</p>
+</div>
+{% endif %}
+
+<script>
+function markPaid(id) {
+  fetch('/api/payments/' + id + '/pay', {method: 'POST'})
+    .then(r => r.json())
+    .then(d => { if (d.ok) location.reload(); });
+}
+</script>
+{% endblock %}
