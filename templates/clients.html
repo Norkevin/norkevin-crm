@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Clients · Norkevin CRM{% endblock %}
+{% block header %}Clients{% endblock %}
+{% block subtitle %}{{ clients|length }} clientes confirmados{% endblock %}
+
+{% block content %}
+<div class="bg-nk-dark rounded-lg border border-nk-gray overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-nk-gray text-xs uppercase tracking-wider text-gray-500">
+      <tr>
+        <th class="px-4 py-3 text-left">Cliente</th>
+        <th class="px-4 py-3 text-left">Contacto</th>
+        <th class="px-4 py-3 text-left">Boda</th>
+        <th class="px-4 py-3 text-left">Paquete</th>
+        <th class="px-4 py-3 text-right">Precio</th>
+        <th class="px-4 py-3 text-right">Pagado</th>
+        <th class="px-4 py-3 text-left">Estado</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-nk-gray">
+      {% for c in clients %}
+      <tr class="hover:bg-nk-gray/50 transition cursor-pointer">
+        <td class="px-4 py-3">
+          <div class="font-medium">{{ c.name }}</div>
+          {% if c.partner_name %}<div class="text-xs text-gray-500">& {{ c.partner_name }}</div>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-xs">
+          <div class="text-gray-400">{{ c.email or '-' }}</div>
+          <div class="text-gray-500">{{ c.phone or '-' }}</div>
+        </td>
+        <td class="px-4 py-3 text-xs">
+          <div class="text-white">{{ c.wedding_date or '-' }}</div>
+          <div class="text-gray-500">{{ c.venue or '-' }}</div>
+        </td>
+        <td class="px-4 py-3"><span class="text-xs text-nk-gold font-medium">{{ c.package or '-' }}</span></td>
+        <td class="px-4 py-3 text-right text-xs">Q{{ '{:,.0f}'.format(c.package_price or 0) }}</td>
+        <td class="px-4 py-3 text-right text-xs">
+          <span class="{% if (c.paid or 0) >= (c.deposit or 0) %}text-green-400{% else %}text-yellow-400{% endif %}">Q{{ '{:,.0f}'.format(c.paid or 0) }}</span>
+          {% if (c.deposit or 0) > 0 and (c.paid or 0) < (c.deposit or 0) %}
+          <div class="text-[10px] text-red-400">Falta: Q{{ '{:,.0f}'.format((c.deposit or 0) - (c.paid or 0)) }}</div>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3">
+          <span class="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">{{ c.status }}</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
