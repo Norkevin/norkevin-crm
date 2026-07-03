@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Leads · Norkevin CRM{% endblock %}
+{% block header %}Leads{% endblock %}
+{% block subtitle %}{{ leads|length }} leads en el pipeline{% endblock %}
+
+{% block content %}
+<!-- Pipeline columns -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+  <div class="bg-nk-dark rounded-lg p-4 border border-nk-gray">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold">Nuevo</h3>
+      <span class="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">{{ counts.nuevo }}</span>
+    </div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-4 border border-nk-gray">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold">Contactado</h3>
+      <span class="text-xs bg-yellow-500 text-black px-2 py-0.5 rounded-full">{{ counts.contactado }}</span>
+    </div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-4 border border-nk-gray">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold">Consulta</h3>
+      <span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">{{ counts.consulta }}</span>
+    </div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-4 border border-nk-gray">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold">Cerrado</h3>
+      <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">{{ counts.cerrado }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Lista de leads -->
+<div class="bg-nk-dark rounded-lg border border-nk-gray overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-nk-gray text-xs uppercase tracking-wider text-gray-500">
+      <tr>
+        <th class="px-4 py-3 text-left">Nombre</th>
+        <th class="px-4 py-3 text-left">Contacto</th>
+        <th class="px-4 py-3 text-left">Boda</th>
+        <th class="px-4 py-3 text-left">Paquete</th>
+        <th class="px-4 py-3 text-left">Estado</th>
+        <th class="px-4 py-3 text-left">Origen</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-nk-gray">
+      {% for lead in leads %}
+      <tr class="hover:bg-nk-gray/50 transition">
+        <td class="px-4 py-3 font-medium">{{ lead.name }}</td>
+        <td class="px-4 py-3">
+          <div class="text-xs text-gray-400">{{ lead.email }}</div>
+          <div class="text-xs text-gray-500">{{ lead.phone }}</div>
+        </td>
+        <td class="px-4 py-3 text-xs">{{ lead.wedding_date or '-' }}</td>
+        <td class="px-4 py-3"><span class="text-xs text-nk-gold">{{ lead.package or '-' }}</span></td>
+        <td class="px-4 py-3">
+          <span class="text-xs px-2 py-1 rounded {% if lead.status == 'nuevo' %}bg-blue-500/20 text-blue-400{% elif lead.status == 'contactado' %}bg-yellow-500/20 text-yellow-400{% elif lead.status == 'consulta' %}bg-purple-500/20 text-purple-400{% else %}bg-green-500/20 text-green-400{% endif %}">{{ lead.status }}</span>
+        </td>
+        <td class="px-4 py-3 text-xs text-gray-500">{{ lead.source or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
