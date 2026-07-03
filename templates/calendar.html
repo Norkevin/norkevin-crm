@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Calendar · Norkevin CRM{% endblock %}
+{% block header %}Calendar{% endblock %}
+{% block subtitle %}Bodas agendadas y eventos{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-7 gap-px bg-nk-gray rounded-lg overflow-hidden">
+  {% set days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] %}
+  {% for day in days %}
+  <div class="bg-nk-dark p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ day }}</div>
+  {% endfor %}
+
+  {% set today = {'day': 1} %}
+  {% for i in range(31) %}
+  <div class="bg-nk-black min-h-[100px] p-2 hover:bg-nk-gray transition">
+    <div class="text-xs text-gray-500 mb-1">{{ i + 1 }}</div>
+    {% for event in events %}
+      {% if event.date and event.date[-2:] == '%02d'|format(i + 1) %}
+      <div class="bg-nk-gold/10 border-l-2 border-nk-gold rounded px-2 py-1 mb-1">
+        <div class="text-xs font-medium truncate text-nk-gold">{{ event.title }}</div>
+        <div class="text-[10px] text-gray-400 truncate">{{ event.venue }}</div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="mt-8 grid grid-cols-3 gap-4">
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Próximas bodas</div>
+    <div class="text-3xl font-bold text-nk-gold">{{ clients|length }}</div>
+    <div class="text-xs text-gray-500 mt-1">Activas en el sistema</div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Confirmadas</div>
+    <div class="text-3xl font-bold text-green-400">{{ clients|length }}</div>
+    <div class="text-xs text-gray-500 mt-1">Con paquete firmado</div>
+  </div>
+  <div class="bg-nk-dark rounded-lg p-5 border border-nk-gray">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Por cobrar</div>
+    <div class="text-3xl font-bold text-red-400">Q15K</div>
+    <div class="text-xs text-gray-500 mt-1">Pendientes de pago</div>
+  </div>
+</div>
+{% endblock %}
