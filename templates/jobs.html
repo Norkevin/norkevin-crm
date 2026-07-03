@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Jobs · Norkevin CRM{% endblock %}
+{% block header %}Jobs{% endblock %}
+{% block subtitle %}Bodas agendadas con su equipo{% endblock %}
+
+{% block content %}
+{% if jobs %}
+<div class="bg-nk-dark rounded-lg border border-nk-gray overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-nk-gray text-xs uppercase tracking-wider text-gray-500">
+      <tr>
+        <th class="px-4 py-3 text-left">Cliente</th>
+        <th class="px-4 py-3 text-left">Boda</th>
+        <th class="px-4 py-3 text-left">Hora</th>
+        <th class="px-4 py-3 text-left">Equipo</th>
+        <th class="px-4 py-3 text-left">Paquete</th>
+        <th class="px-4 py-3 text-left">Estado</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-nk-gray">
+      {% for j in jobs %}
+      <tr class="hover:bg-nk-gray/50 transition">
+        <td class="px-4 py-3 font-medium">
+          {{ j.client_name }}
+          {% if j.partner_name %}<span class="text-gray-500 text-xs">& {{ j.partner_name }}</span>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-xs">
+          <div>{{ j.wedding_date or '-' }}</div>
+          <div class="text-gray-500">{{ j.venue or '-' }}</div>
+        </td>
+        <td class="px-4 py-3 text-xs">{{ j.ceremony_time or '-' }}</td>
+        <td class="px-4 py-3 text-xs">
+          {% if j.photographers %}<div class="text-blue-400">📷 {{ j.photographers }}</div>{% endif %}
+          {% if j.videographers %}<div class="text-purple-400">🎥 {{ j.videographers }}</div>{% endif %}
+        </td>
+        <td class="px-4 py-3"><span class="text-xs text-nk-gold">{{ j.package or '-' }}</span></td>
+        <td class="px-4 py-3">
+          <span class="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-400">{{ j.status }}</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-nk-dark rounded-lg p-12 border border-nk-gray text-center">
+  <div class="text-gray-500 mb-2">📷</div>
+  <p class="text-sm text-gray-400 mb-4">No hay jobs (bodas) agendados todavía</p>
+  <p class="text-xs text-gray-500">Los jobs se crean automáticamente desde los clientes confirmados</p>
+</div>
+{% endif %}
+{% endblock %}
